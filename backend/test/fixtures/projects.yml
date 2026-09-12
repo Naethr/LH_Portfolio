@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  slug: MyString
+  summary: MyText
+  description: MyText
+  category: MyString
+  year: 1
+  client: MyString
+  published: false
+  featured: false
+
+two:
+  title: MyString
+  slug: MyString
+  summary: MyText
+  description: MyText
+  category: MyString
+  year: 1
+  client: MyString
+  published: false
+  featured: false
