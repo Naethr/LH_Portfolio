@@ -1,4 +1,6 @@
 class Api::V1::ProjectsController < ApplicationController
+  allow_unauthenticated_access
+  
   INDEX_FIELDS = %i[
     title
     slug
