@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Api::V1::Admin::SessionsTest < ActionDispatch::IntegrationTest
+class ApiV1AdminSessionsTest < ActionDispatch::IntegrationTest
   setup do
     @user = User.create!(
       email_address: "admin@example.com",
