@@ -22,14 +22,63 @@ class Api::V1::ProjectsController < ApplicationController
   ].freeze
   
   def index
-    projects = Project.published
+    projects = Project.published.includes(
+      project_images: {
+        image_attachment: :blob
+      }
+    )
     
-    render json: projects.as_json(only: INDEX_FIELDS)
+    render json: projects.map { |project|
+      project_index_json(project)
+  }
   end
 
   def show
-    project = Project.published.find_by!(slug: params[:slug])
+    project = Project.published.includes( project_images: {
+      image_attachment: :blob
+      }
+    )
+    .find_by!(slug: params[:slug] )
+    
+    render json: project_show_json(project)
+end
 
-    render json: project.as_json(only: SHOW_FIELDS)
+private
+
+  def project_index_json(project)
+    primary_image = project.project_images.detect(&:is_primary? )
+  
+    project.as_json(only: INDEX_FIELDS).merge(
+      "primary_image" => project_image_json(primary_image)
+    )
+  end
+
+  def project_show_json(project)
+    images = project.project_images.sort_by { |project_image|
+      [project_image.position, project_image.id]
+  }
+
+    project.as_json(only: SHOW_FIELDS).merge(
+      "images" => images.map { |project_image|
+        project_image_json(project_image)
+      }
+    )
+  end
+
+  def project_image_json(project_image)
+    return nil unless project_image
+
+    {
+      asset_kind: project_image.asset_kind,
+      position: project_image.position,
+      is_primary: project_image.is_primary,
+      alt_text: project_image.alt_text,
+      caption: project_image.caption,
+      image_url: rails_blob_url(
+        project_image.image,
+        host: request.host_with_port,
+        protocol: request.protocol
+      )
+    }
   end
 end

@@ -28,4 +28,119 @@ class Api::V1::ProjectsTest < ActionDispatch::IntegrationTest
     assert_includes slugs, @published_project.slug
     assert_not_includes slugs, @draft_project.slug
   end
+
+test "GET /api/v1/projects includes only the primary image for each project" do
+  primary_image = create_project_image(
+    project: @published_project,
+    position: 1,
+    is_primary: true,
+    asset_kind: "mockup",
+    alt_text: "Primary mockup"
+  )
+
+  create_project_image(
+    project: @published_project,
+    position: 0,
+    is_primary: false,
+    asset_kind: "artwork",
+    alt_text: "Final artwork"
+  )
+
+  get api_v1_projects_path
+
+  assert_response :success
+
+  body = JSON.parse(response.body)
+
+  project = body.find { |item|
+    item["slug"] == @published_project.slug
+  }
+
+  assert_equal "Primary mockup",
+              project.dig("primary_image", "alt_text")
+
+  assert_equal "mockup",
+              project.dig("primary_image", "asset_kind")
+
+  assert_not project.key?("images")
+end
+
+test "GET /api/v1/projects/:slug returns project images in position order" do
+  second_image = create_project_image(
+    project: @published_project,
+    position: 2,
+    asset_kind: "mockup",
+    alt_text: "Second image"
+  )
+
+  first_image = create_project_image(
+    project: @published_project,
+    position: 0,
+    asset_kind: "artwork",
+    alt_text: "First image"
+  )
+
+  get api_v1_project_path(@published_project.slug)
+
+  assert_response :success
+
+  body = JSON.parse(response.body)
+
+  assert_equal(
+    [
+      first_image.alt_text,
+      second_image.alt_text
+    ],
+    body["images"].map { |image| image["alt_text"] }
+  )
+  end
+  test "public project images expose only the public image contract" do
+  create_project_image(
+    project: @published_project,
+    is_primary: true
+  )
+
+  get api_v1_project_path(@published_project.slug)
+
+  assert_response :success
+
+  body = JSON.parse(response.body)
+  image = body["images"].first
+
+  assert_equal(
+    %w[
+      alt_text
+      asset_kind
+      caption
+      image_url
+      is_primary
+      position
+    ].sort,
+    image.keys.sort
+  )
+end
+  private
+  def create_project_image(
+    project:,
+    position: 0,
+    is_primary: false,
+    asset_kind: "artwork",
+    alt_text: "Test image"
+  )
+  project_image = project.project_images.new(
+    asset_kind: asset_kind,
+    position: position,
+    is_primary: is_primary,
+    alt_text: alt_text
+  )
+
+  project_image.image.attach(
+    io: File.open(file_fixture("test-image.png")),
+    filename: "test-image.png",
+    content_type: "image/png"
+  )
+
+  project_image.save!
+  project_image
+end
 end
