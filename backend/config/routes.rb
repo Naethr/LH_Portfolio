@@ -7,7 +7,9 @@ Rails.application.routes.draw do
 
         namespace :admin do
           resource :session, only: [:show, :create, :destroy]
-          resources :projects, only: [:index, :show, :create, :update, :destroy]
+          resources :projects, only: [:index, :show, :create, :update, :destroy] do
+            resources :images, only: [:index, :create, :update, :destroy], controller: "project_images"
+          end
         end
       end
   end
