@@ -118,7 +118,31 @@ test "GET /api/v1/projects/:slug returns project images in position order" do
     ].sort,
     image.keys.sort
   )
-end
+  end
+  test "public project index uses an image variant" do
+  create_project_image(
+    project: @published_project,
+    is_primary: true
+  )
+
+  get api_v1_projects_path
+
+  assert_response :success
+
+  body = JSON.parse(response.body)
+
+  project = body.find { |item|
+    item["slug"] == @published_project.slug
+  }
+
+  image_url = project.dig(
+    "primary_image",
+    "image_url"
+  )
+
+  assert_includes image_url,
+                  "/rails/active_storage/representations/"
+  end
   private
   def create_project_image(
     project:,

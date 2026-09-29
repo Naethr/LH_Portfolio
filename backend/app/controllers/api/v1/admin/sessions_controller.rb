@@ -1,4 +1,6 @@
 class Api::V1::Admin::SessionsController < ApplicationController
+  rate_limit to: 10, within: 3.minutes, only: :create
+  
   allow_unauthenticated_access only: :create
 
   def create

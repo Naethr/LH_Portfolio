@@ -9,8 +9,14 @@ class ProjectImage < ApplicationRecord
 
   belongs_to :project
 
-  has_one_attached :image
-
+  has_one_attached :image do |attachable|
+    attachable.variant :card,
+      resize_to_limit: [1200, 1200]
+    
+    attachable.variant :gallery,
+      resize_to_limit: [2400, 2400]
+  end
+  
   validates :asset_kind, presence: true, inclusion: { in: ASSET_KINDS }
 
   validates :position, numericality: { only_integer: true, greater_than_or_equal_to: 0 }

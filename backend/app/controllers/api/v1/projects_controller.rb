@@ -49,7 +49,10 @@ private
     primary_image = project.project_images.detect(&:is_primary? )
   
     project.as_json(only: INDEX_FIELDS).merge(
-      "primary_image" => project_image_json(primary_image)
+      "primary_image" => project_image_json(
+        primary_image,
+        variant: :card
+        )
     )
   end
 
@@ -60,12 +63,15 @@ private
 
     project.as_json(only: SHOW_FIELDS).merge(
       "images" => images.map { |project_image|
-        project_image_json(project_image)
+        project_image_json(
+          project_image,
+          variant: :gallery
+        )
       }
     )
   end
 
-  def project_image_json(project_image)
+  def project_image_json(project_image, variant:)
     return nil unless project_image
 
     {
@@ -74,8 +80,8 @@ private
       is_primary: project_image.is_primary,
       alt_text: project_image.alt_text,
       caption: project_image.caption,
-      image_url: rails_blob_url(
-        project_image.image,
+      image_url: rails_representation_url(
+        project_image.image.variant(variant),
         host: request.host_with_port,
         protocol: request.protocol
       )

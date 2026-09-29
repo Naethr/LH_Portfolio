@@ -107,7 +107,18 @@ class ApiV1AdminSessionsTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
-  private
+  test "GET /api/v1/admin/session rejects an expired session" do
+    login
+
+    session = Session.order(:created_at).last
+    session.update_column(:created_at, 13.hours.ago)
+
+    get api_v1_admin_session_path
+
+    assert_response :unauthorized
+  end
+
+private
 
     def csrf_token
       get api_v1_csrf_path

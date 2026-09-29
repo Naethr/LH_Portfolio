@@ -1,6 +1,8 @@
 module Authentication
   extend ActiveSupport::Concern
 
+  SESSION_TTL = 12.hours
+
   included do
     before_action :require_authentication
   end
@@ -25,7 +27,13 @@ module Authentication
     end
 
     def find_session_by_cookie
-      Session.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+      session_id = cookies.signed[:session_id]
+    
+      return unless session_id
+    
+      Session
+        .where("created_at >= ?", SESSION_TTL.ago)
+        .find_by(id: session_id)
     end
 
     def request_authentication
@@ -35,7 +43,14 @@ module Authentication
     def start_new_session_for(user)
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         Current.session = session
-        cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
+        
+        cookies.signed[:session_id] = {
+          value: session.id,
+          expires: SESSION_TTL.from_now,
+          httponly: true,
+          same_site: :lax,
+          secure: Rails.env.production?
+        }
       end
     end
 
