@@ -121,6 +121,7 @@ function App() {
   const [detailResult, setDetailResult] = useState<{ slug: string; detail: ProjectDetail | null; error: boolean } | null>(null)
   const [imageIndex, setImageIndex] = useState(0)
   const [zoomed, setZoomed] = useState(false)
+  const [contactRevealed, setContactRevealed] = useState(false)
   const detailRef = useRef<HTMLDialogElement>(null)
   const zoomRef = useRef<HTMLDialogElement>(null)
   const openerRef = useRef<HTMLElement | null>(null)
@@ -264,7 +265,30 @@ function App() {
           {visible < filtered.length && <div className="more-row"><button type="button" className="btn btn-outline" onClick={() => setVisible((count) => count + 12)}>Voir plus de créations</button></div>}
         </div></section>
         <section id="a-propos" className="about wrap" aria-labelledby="about-title"><div className="about-layout"><div className="about-copy"><span className="eyebrow">À propos</span><h2 id="about-title">Le goût des images,<br /><em>le sens du détail.</em></h2>{profile?.headline && <p>{profile.headline}</p>}{aboutCopy.map((part, index) => <p key={index}>{part}</p>)}{!profile && !profileError && <p role="status">Chargement du profil…</p>}{profileError && <p role="alert">Le profil est momentanément indisponible.</p>}<p className="sign">{firstName}</p></div><div className="about-photo-stage"><figure className="about-photo"><img src="/images/louise.webp" alt="Louise Huguin dans un jardin, devant un pavillon japonais" loading="lazy" width="1254" height="1254" /><figcaption>Un peu de moi, beaucoup de curiosité.</figcaption></figure></div></div><div className="aside-work"><div className="aside-heading"><h3>Et parfois, hors cadre.</h3><p>D’autres supports, la même envie de créer.</p></div>{extras.length > 0 && <div id="extras" className="grid small-grid">{extras.map((project, index) => <Card key={project.slug} project={project} index={index} onOpen={navigateToProject} />)}</div>}{projectsState === 'ready' && extras.length === 0 && <p className="content-state">D’autres créations à découvrir bientôt.</p>}</div></section>
-        <section id="contact" className="contact" aria-labelledby="contact-title"><div className="wrap contact-layout"><div className="contact-heading"><span className="eyebrow">Contact</span><h2 id="contact-title">Restons<br />en contact</h2></div><div className="contact-note"><p>Une idée, un projet ou simplement quelques mots&nbsp;?</p></div><a className="contact-mail" href={`mailto:${contactEmail}`}><span className="contact-mail-address">{contactEmail}</span><span className="contact-mail-arrow" aria-hidden="true">↗</span></a></div></section>
+        <section id="contact" className="contact" aria-labelledby="contact-title">
+          <div className="wrap contact-stage">
+            <div className="contact-poster">
+              <div className="contact-poster-top"><span className="eyebrow">Contact</span></div>
+              <div className="contact-poster-main">
+                <div className="contact-heading"><h2 id="contact-title">Restons<br />en contact</h2><p>Une idée, un projet ou simplement quelques mots&nbsp;?<svg className="contact-guide-arrow" viewBox="0 0 300 110" fill="none" aria-hidden="true"><path d="M5 24c39 24 61-19 92 8 20 17 9 39-9 33-18-6-1-32 24-24 55 17 89 44 161 29m-22-15 24 15-26 14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg></p></div>
+                <div className="contact-polaroid" onMouseEnter={() => setContactRevealed(true)}>
+                  <button type="button" className="contact-polaroid-trigger" aria-label={contactRevealed ? 'Coordonnées de Louise affichées' : 'Révéler les coordonnées de Louise'} aria-expanded={contactRevealed} aria-controls="contact-details" onFocus={() => setContactRevealed(true)} onClick={() => setContactRevealed(true)}>
+                    <span className="contact-polaroid-art" aria-hidden="true"><span className="contact-art-top">Graphisme / Édition</span><span className="contact-art-title">On en<br />parle<span className="contact-art-question">?</span></span><span className="contact-art-bottom">Une idée devient un projet.</span></span>
+                    <span className="contact-polaroid-caption">{!contactRevealed && <>Découvrir les coordonnées <span aria-hidden="true">↗</span></>}</span>
+                  </button>
+                  <div id="contact-details" className="contact-polaroid-details" hidden={!contactRevealed}>
+                    <span className="contact-details-kicker">Louise Huguin / Contact</span>
+                    <svg className="contact-details-arrow" viewBox="0 0 160 130" fill="none" aria-hidden="true"><path d="M76 7c51 6 65 32 33 44-26 10-41-14-18-20 27-8 28 51-36 84m17-17-19 19 26 1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <div className="contact-details-links">
+                      <a className="contact-details-email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+                      {instagramUrl ? <a className="contact-details-instagram" href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram de Louise Huguin (nouvel onglet)"><InstagramIcon /><span>Instagram</span><span aria-hidden="true">↗</span></a> : <span className="contact-details-instagram contact-details-pending" aria-label="Instagram de Louise, lien à venir"><InstagramIcon /><span>Instagram</span></span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
       <footer className="footer wrap"><span>{name} · Design graphique & édition</span><span>{profile?.instagram_url && <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">Instagram</a>}{profile?.linkedin_url && <> · <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">LinkedIn</a></>}</span><a href="/#top">Retour en haut</a></footer>
       <dialog ref={detailRef} id="detail" aria-labelledby="detail-title" onClose={closeDetail} onKeyDown={(event) => { if (zoomed) return; if (event.key === 'ArrowRight') { event.preventDefault(); stepImage(1) } if (event.key === 'ArrowLeft') { event.preventDefault(); stepImage(-1) } }}><div className="detail-top"><span className="eyebrow">Louise Huguin / Créations</span><button type="button" className="close" onClick={closeDetail}>Fermer <b aria-hidden="true">×</b></button></div>
