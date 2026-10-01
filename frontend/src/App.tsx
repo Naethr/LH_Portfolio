@@ -19,17 +19,43 @@ const approvedAboutCopy = [
 ]
 const approvedContactEmail = 'louise.huguin@gmail.com'
 const heroSlots = [
-  { title: 'Théâtre de femmes', x: '5%', y: '12%', w: '10%', r: '-9deg', mx: '3%', my: '7%', mw: '14%' },
-  { title: 'Intersections', x: '24%', y: '4%', w: '9%', r: '8deg', mx: '25%', my: '3%', mw: '14%' },
-  { title: '1624-2024', x: '46%', y: '2%', w: '8%', r: '-4deg', mx: '52%', my: '5%', mw: '13%' },
-  { title: 'Kafka sur le rivage', x: '68%', y: '6%', w: '8%', r: '11deg', mx: '78%', my: '6%', mw: '14%' },
-  { title: 'EThAp', x: '86%', y: '14%', w: '9%', r: '8deg', mx: '84%', my: '37%', mw: '13%' },
-  { title: 'Les ambassadrices', x: '15%', y: '43%', w: '9%', r: '-10deg', mx: '2%', my: '38%', mw: '13%' },
-  { title: 'Game of Thrones', x: '78%', y: '42%', w: '9%', r: '-9deg', mx: '5%', my: '74%', mw: '14%' },
-  { title: 'Giacomo Puccini', x: '4%', y: '68%', w: '10%', r: '7deg', mx: '29%', my: '76%', mw: '14%' },
-  { title: 'La belle et la bête', x: '29%', y: '71%', w: '8%', r: '-6deg', mx: '55%', my: '75%', mw: '14%' },
-  { title: 'La ville des sens', x: '70%', y: '69%', w: '9%', r: '10deg', mx: '80%', my: '72%', mw: '14%' },
+  { title: 'Théâtre de femmes', region: 'left', x: '-9%', y: '-8%', w: '66%', r: '-10deg' },
+  { title: 'Intersections', region: 'left', x: '38%', y: '7%', w: '58%', r: '7deg' },
+  { title: '1624-2024', region: 'left', x: '6%', y: '29%', w: '65%', r: '-5deg' },
+  { title: 'Lettres recommandées', region: 'left', x: '57%', y: '48%', w: '57%', r: '9deg' },
+  { title: 'Historiographie musicale', region: 'left', x: '-7%', y: '69%', w: '64%', r: '-7deg' },
+  { title: 'Lire Lanson', region: 'left', x: '78%', y: '78%', w: '55%', r: '5deg', wide: true },
+  { title: 'Kafka sur le rivage', region: 'right', x: '56%', y: '-11%', w: '63%', r: '9deg' },
+  { title: 'EThAp', region: 'right', x: '6%', y: '9%', w: '60%', r: '-8deg' },
+  { title: 'Les ambassadrices', region: 'right', x: '48%', y: '27%', w: '63%', r: '6deg' },
+  { title: 'Illustrer la pensée', region: 'right', x: '-6%', y: '50%', w: '59%', r: '-10deg' },
+  { title: 'Revue Orages', region: 'right', x: '54%', y: '68%', w: '62%', r: '7deg' },
+  { title: 'Biblyon', region: 'right', x: '-19%', y: '78%', w: '56%', r: '-6deg', wide: true },
+  { title: 'George Sand', region: 'top', x: '-5%', y: '-38%', w: '31%', r: '-8deg', mx: '-12%', my: '-38%', mw: '44%', mobile: true },
+  { title: 'Audaces & Innovations', region: 'top', x: '37%', y: '-24%', w: '28%', r: '6deg' },
+  { title: 'La Table Claudienne', region: 'top', x: '78%', y: '-38%', w: '30%', r: '10deg', mx: '72%', my: '-43%', mw: '43%', mobile: true },
+  { title: 'Game of Thrones', region: 'bottom', x: '-4%', y: '8%', w: '24%', r: '7deg', mx: '-22%', my: '18%', mw: '52%', mobile: true },
+  { title: 'Conférence Ucly', region: 'bottom', x: '3%', y: '40%', w: '22%', r: '-6deg', wide: true },
+  { title: 'Giacomo Puccini', region: 'bottom', x: '11%', y: '2%', w: '23%', r: '-9deg', mx: '5%', my: '2%', mw: '46%', mobile: true },
+  { title: 'Les Lois de Platon', region: 'bottom', x: '18%', y: '35%', w: '23%', r: '8deg', wide: true },
+  { title: 'La belle et la bête', region: 'bottom', x: '26%', y: '12%', w: '24%', r: '6deg', mx: '34%', my: '26%', mw: '47%', mobile: true },
+  { title: 'Journée de l_italianisme', region: 'bottom', x: '33%', y: '39%', w: '23%', r: '-7deg', wide: true },
+  { title: 'La ville des sens', region: 'bottom', x: '41%', y: '4%', w: '24%', r: '-8deg', mx: '62%', my: '6%', mw: '47%', mobile: true },
+  { title: 'Conférence Maurice Godelier', region: 'bottom', x: '48%', y: '36%', w: '23%', r: '9deg', wide: true },
+  { title: 'Concert-lecture George Sand', region: 'bottom', x: '56%', y: '16%', w: '23%', r: '7deg', mx: '85%', my: '24%', mw: '50%', mobile: true },
+  { title: 'IA & intertextualité', region: 'bottom', x: '63%', y: '37%', w: '23%', r: '-6deg', wide: true },
+  { title: 'La littérature à l’heure de la science ouverte', region: 'bottom', x: '71%', y: '3%', w: '23%', r: '-9deg' },
+  { title: 'L’artiste au travail', region: 'bottom', x: '78%', y: '35%', w: '22%', r: '8deg', wide: true },
+  { title: 'L’armée, le soldat', region: 'bottom', x: '86%', y: '7%', w: '23%', r: '10deg' },
+  { title: 'Homme, nature et agriculture', region: 'bottom', x: '93%', y: '38%', w: '23%', r: '-7deg', wide: true },
 ]
+const heroRegions = ['left', 'right', 'top', 'bottom'] as const
+type HeroViewport = 'mobile' | 'standard' | 'wide'
+
+function currentHeroViewport(): HeroViewport {
+  if (window.matchMedia('(max-width: 700px)').matches) return 'mobile'
+  return window.matchMedia('(min-width: 1701px)').matches ? 'wide' : 'standard'
+}
 
 function slugFromPath() {
   const match = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/)
@@ -52,6 +78,10 @@ function projectFormat(project: ProjectDetail) {
   return project.title
 }
 
+function InstagramIcon() {
+  return <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5" /><circle cx="12" cy="12" r="4.2" /><circle cx="17.7" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+}
+
 function Card({ project, index, onOpen }: { project: ProjectSummary; index: number; onOpen: (project: ProjectSummary, trigger: HTMLElement) => void }) {
   return (
     <button
@@ -72,6 +102,7 @@ function Card({ project, index, onOpen }: { project: ProjectSummary; index: numb
 }
 
 function App() {
+  const [heroViewport, setHeroViewport] = useState<HeroViewport>(currentHeroViewport)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [profileError, setProfileError] = useState(false)
   const [projects, setProjects] = useState<ProjectSummary[]>([])
@@ -86,6 +117,18 @@ function App() {
   const zoomRef = useRef<HTMLDialogElement>(null)
   const openerRef = useRef<HTMLElement | null>(null)
   const touchStartRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 700px)')
+    const wide = window.matchMedia('(min-width: 1701px)')
+    const update = () => setHeroViewport(currentHeroViewport())
+    mobile.addEventListener('change', update)
+    wide.addEventListener('change', update)
+    return () => {
+      mobile.removeEventListener('change', update)
+      wide.removeEventListener('change', update)
+    }
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -174,6 +217,7 @@ function App() {
   const [firstName, ...lastName] = name.split(/\s+/)
   const aboutCopy = profile?.bio ? paragraphs(profile.bio) : profile ? approvedAboutCopy : []
   const contactEmail = profile?.email || approvedContactEmail
+  const instagramUrl = profile?.instagram_url?.trim()
   const nextList = detail?.category === 'Explorations' ? extras : filtered.length ? filtered : coreProjects
 
   function stepImage(direction: number) {
@@ -190,13 +234,18 @@ function App() {
   return (
     <>
       <a className="skip" href="#creations">Aller aux créations</a>
-      <header className="topbar" id="top"><nav className="nav wrap" aria-label="Navigation principale"><a className="brand" href="/#top" aria-label="Louise Huguin, accueil">LH</a><div className="navlinks"><a href="/#a-propos">À propos</a><a href="/#creations">Créations</a><a href="/#contact">Contact</a></div></nav></header>
+      <header className="topbar" id="top"><nav className="nav wrap" aria-label="Navigation principale"><a className="brand" href="/#top" aria-label="Louise Huguin, accueil">LH</a><div className="navlinks"><a href="/#a-propos">À propos</a><a href="/#creations">Créations</a><a href="/#contact">Contact</a></div>{instagramUrl ? <a className="instagram-icon" href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram de Louise Huguin (nouvel onglet)"><InstagramIcon /></a> : <span className="instagram-icon instagram-pending" role="img" aria-label="Instagram de Louise Huguin, lien à venir"><InstagramIcon /></span>}</nav></header>
       <main>
         <section className="hero" aria-labelledby="intro-title"><div className="hero-canvas">
-          {heroSlots.map((slot, index) => {
-            const project = heroProjects[index]
-            return project?.primary_image && <button key={slot.title} type="button" className="float" style={{ '--x': slot.x, '--y': slot.y, '--w': slot.w, '--r': slot.r, '--mx': slot.mx, '--my': slot.my, '--mw': slot.mw, '--duration': `${7 + index % 4}s`, '--delay': `${-index * 0.63}s` } as CSSProperties} aria-label={`Découvrir ${project.title}`} onClick={(event) => navigateToProject(project, event.currentTarget)}><img src={project.primary_image.image_url} alt="" /></button>
-          })}
+          {heroRegions.map((region) => <div key={region} className={`hero-collage hero-collage-${region}`}>
+            {heroSlots.map((slot, index) => {
+              const project = heroProjects[index]
+              if (slot.region !== region || !project?.primary_image) return null
+              if (heroViewport === 'mobile' && !('mobile' in slot && slot.mobile)) return null
+              if (heroViewport !== 'wide' && 'wide' in slot && slot.wide) return null
+              return <button key={`${slot.title}-${index}`} type="button" className={`float${'wide' in slot && slot.wide ? ' hero-wide' : ''}${'mobile' in slot && slot.mobile ? ' hero-mobile' : ''}`} style={{ '--x': slot.x, '--y': slot.y, '--w': slot.w, '--r': slot.r, '--mx': 'mx' in slot ? slot.mx : undefined, '--my': 'my' in slot ? slot.my : undefined, '--mw': 'mw' in slot ? slot.mw : undefined, '--duration': `${10 + index % 4}s`, '--delay': `${-index * 0.63}s` } as CSSProperties} aria-label={`Découvrir ${project.title}`} onClick={(event) => navigateToProject(project, event.currentTarget)}><img src={project.primary_image.image_url} alt="" /></button>
+            })}
+          </div>)}
           <h1 className="hero-heading" id="intro-title"><span className="name">{firstName}</span><span className="surname">{lastName.join(' ')}</span><span className="profession">— Graphiste —</span></h1>
         </div></section>
         <section id="creations" className="work-section" aria-labelledby="work-title"><div className="wrap"><div className="section-head"><h2 id="work-title">Créations</h2></div><div className="filters" aria-label="Filtrer les créations">{categories.map((category) => <button type="button" className="filter" key={category} aria-pressed={filter === category} onClick={() => chooseFilter(category)}>{category === 'Tous' ? 'Tout voir' : category}</button>)}</div><p className="results" aria-live="polite">{projectsState === 'ready' ? `${displayed.length} créations affichées sur ${filtered.length}` : ''}</p>
@@ -207,7 +256,7 @@ function App() {
           {visible < filtered.length && <div className="more-row"><button type="button" className="btn btn-outline" onClick={() => setVisible((count) => count + 12)}>Voir plus de créations</button></div>}
         </div></section>
         <section id="a-propos" className="about wrap" aria-labelledby="about-title"><div className="about-layout"><div className="about-copy"><span className="eyebrow">À propos</span><h2 id="about-title">Le goût des images,<br /><em>le sens du détail.</em></h2>{profile?.headline && <p>{profile.headline}</p>}{aboutCopy.map((part, index) => <p key={index}>{part}</p>)}{!profile && !profileError && <p role="status">Chargement du profil…</p>}{profileError && <p role="alert">Le profil est momentanément indisponible.</p>}<p className="sign">{firstName}</p></div><div className="about-photo-stage"><figure className="about-photo"><img src="/images/louise.webp" alt="Louise Huguin dans un jardin, devant un pavillon japonais" loading="lazy" width="1254" height="1254" /><figcaption>Un peu de moi, beaucoup de curiosité.</figcaption></figure></div></div><div className="aside-work"><div className="aside-heading"><h3>Et parfois, hors cadre.</h3><p>D’autres supports, la même envie de créer.</p></div>{extras.length > 0 && <div id="extras" className="grid small-grid">{extras.map((project, index) => <Card key={project.slug} project={project} index={index} onOpen={navigateToProject} />)}</div>}{projectsState === 'ready' && extras.length === 0 && <p className="content-state">D’autres créations à découvrir bientôt.</p>}</div></section>
-        <section id="contact" className="contact" aria-labelledby="contact-title"><div className="wrap contact-layout"><div className="contact-heading"><span className="eyebrow">Contact</span><h2 id="contact-title">Restons<br />en contact</h2></div><div className="contact-note"><p>Une idée, un projet ou simplement quelques mots&nbsp;?</p><a className="contact-mail" href={`mailto:${contactEmail}`}>{contactEmail}<span aria-hidden="true">↗</span></a></div></div></section>
+        <section id="contact" className="contact" aria-labelledby="contact-title"><div className="wrap contact-layout"><div className="contact-heading"><span className="eyebrow">Contact</span><h2 id="contact-title">Restons<br />en contact</h2></div><div className="contact-note"><p>Une idée, un projet ou simplement quelques mots&nbsp;?</p></div><a className="contact-mail" href={`mailto:${contactEmail}`}><span className="contact-mail-address">{contactEmail}</span><span className="contact-mail-arrow" aria-hidden="true">↗</span></a></div></section>
       </main>
       <footer className="footer wrap"><span>{name} · Design graphique & édition</span><span>{profile?.instagram_url && <a href={profile.instagram_url} target="_blank" rel="noopener noreferrer">Instagram</a>}{profile?.linkedin_url && <> · <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer">LinkedIn</a></>}</span><a href="/#top">Retour en haut</a></footer>
       <dialog ref={detailRef} id="detail" aria-labelledby="detail-title" onClose={closeDetail} onKeyDown={(event) => { if (zoomed) return; if (event.key === 'ArrowRight') { event.preventDefault(); stepImage(1) } if (event.key === 'ArrowLeft') { event.preventDefault(); stepImage(-1) } }}><div className="detail-top"><span className="eyebrow">Louise Huguin / Créations</span><button type="button" className="close" onClick={closeDetail}>Fermer <b aria-hidden="true">×</b></button></div>
