@@ -92,14 +92,13 @@ a.instagram-icon:hover { background: #202b5510; }
   grid-template-columns: minmax(0, 1fr) clamp(470px, 39vw, 680px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) 260px;
 }
-/* Separate, clipped grid cells keep every image outside the text area,
-   including its rotation, shadow, hover and animation. */
+/* Keep the collage cells as positioning anchors; the hero clips only at the viewport edge. */
 .hero-collage {
   position: relative;
   isolation: isolate;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .hero-collage-left { grid-column: 1; grid-row: 1 / -1; }
 .hero-collage-right { grid-column: 3; grid-row: 1 / -1; }
@@ -279,6 +278,7 @@ a.instagram-icon:hover { background: #202b5510; }
   .hero-collage-top { grid-column: 1; height: 68px; }
   .hero .float { left: var(--mx); top: var(--my); }
   .hero-collage-top .float, .hero-collage-bottom .float { width: var(--mw); }
+  .hero-collage-top .float { width: min(var(--mw), 94px); }
   .hero-collage-top .float:not(.hero-mobile), .hero-collage-bottom .float:not(.hero-mobile) { display: none; }
   .about-photo-stage { order: 0; width: 100%; min-height: 0; padding: 30px 44px; }
   .about-photo { width: min(100%, 410px); padding: 12px 12px 0; }
