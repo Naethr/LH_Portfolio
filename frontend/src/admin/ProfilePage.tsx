@@ -137,20 +137,30 @@ export function ProfilePage() {
     <p className="admin-kicker">Informations</p>
     <h1>Profil</h1>
     <p className="admin-lead">Modifiez les informations affichées dans le portfolio, puis enregistrez.</p>
-    {loadState === 'loading' && <p role="status">Chargement du profil…</p>}
-    {loadState === 'error' && <div role="alert"><p>Impossible de charger le profil pour le moment.</p><button className="admin-secondary-button" type="button" onClick={() => { setLoadState('loading'); setAttempt((value) => value + 1) }}>Réessayer</button></div>}
+    {loadState === 'loading' && <p className="admin-state admin-state-loading" role="status">Chargement du profil…</p>}
+    {loadState === 'error' && <div className="admin-state admin-state-error" role="alert"><p>Impossible de charger le profil pour le moment.</p><button className="admin-secondary-button" type="button" onClick={() => { setLoadState('loading'); setAttempt((value) => value + 1) }}>Réessayer</button></div>}
     {loadState === 'ready' && <>
       {feedback && <p className="admin-notice" role="status">{feedback}</p>}
-      {requestError && <p className="admin-error" role="alert">{requestError}</p>}
+      {requestError && <p className="admin-error admin-inline-alert" role="alert">{requestError}</p>}
       {!!Object.keys(fieldErrors).length && <div className="admin-validation" role="alert" tabIndex={-1} ref={validationRef}>
         <p>Veuillez corriger les erreurs suivantes :</p>
         <ul>{Object.entries(fieldErrors).map(([name, messages]) => <li key={name}>{name in labels ? <a href={`#profile-${name}`}>{labels[name as ProfileField]}</a> : name} : {messages.join(', ')}</li>)}</ul>
       </div>}
       <form className="admin-profile-form" onSubmit={handleSubmit} noValidate>
         <fieldset disabled={saving}>
-          <div className="admin-form-grid">
-            {(Object.keys(labels) as ProfileField[]).map((name) => <ProfileFieldInput key={name} name={name} value={values[name]} error={fieldErrors[name]} onChange={changeField} />)}
-          </div>
+          <section className="admin-form-section" aria-labelledby="profile-presentation-heading">
+            <h2 id="profile-presentation-heading">Présentation</h2>
+            <div className="admin-form-grid">
+              {(['display_name', 'headline', 'bio'] as const).map((name) => <ProfileFieldInput key={name} name={name} value={values[name]} error={fieldErrors[name]} onChange={changeField} />)}
+            </div>
+          </section>
+          <section className="admin-form-section" aria-labelledby="profile-contact-heading">
+            <h2 id="profile-contact-heading">Contact et réseaux</h2>
+            <p className="admin-form-section-note">Laissez un champ vide si vous ne souhaitez pas l’afficher.</p>
+            <div className="admin-form-grid">
+              {(['email', 'instagram_url', 'linkedin_url'] as const).map((name) => <ProfileFieldInput key={name} name={name} value={values[name]} error={fieldErrors[name]} onChange={changeField} />)}
+            </div>
+          </section>
           <div className="admin-form-actions">
             <button className="admin-button" type="submit">{saving ? 'Enregistrement…' : 'Enregistrer le profil'}</button>
           </div>

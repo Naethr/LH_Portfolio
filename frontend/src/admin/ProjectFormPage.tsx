@@ -97,6 +97,7 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
   const [feedback, setFeedback] = useState(new URLSearchParams(window.location.search).get('created') === '1' ? 'Le projet a été créé.' : '')
   const dialogRef = useRef<HTMLDialogElement>(null)
   const validationRef = useRef<HTMLDivElement>(null)
+  const focusValidation = useRef(false)
 
   useEffect(() => {
     if (projectId === undefined) return
@@ -115,7 +116,10 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
   }, [projectId, attempt])
 
   useEffect(() => {
-    if (Object.keys(fieldErrors).length) validationRef.current?.focus()
+    if (focusValidation.current && Object.keys(fieldErrors).length) {
+      validationRef.current?.focus()
+      focusValidation.current = false
+    }
   }, [fieldErrors])
 
   function changeField(name: TextFieldName, value: string) {
@@ -137,6 +141,7 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
     setFieldErrors({})
     const input = projectInput(values)
     if (input.year !== null && !Number.isSafeInteger(input.year)) {
+      focusValidation.current = true
       setFieldErrors({ year: ['Veuillez saisir une année entière.'] })
       return
     }
@@ -154,6 +159,7 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
       if (error instanceof AdminApiError && error.status === 401) {
         window.location.replace('/admin/login')
       } else if (error instanceof AdminApiError && error.status === 422 && Object.keys(error.errors).length) {
+        focusValidation.current = true
         setFieldErrors(error.errors)
       } else {
         setRequestError('Enregistrement impossible pour le moment. Réessayez.')
@@ -179,9 +185,9 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
     }
   }
 
-  if (loadState === 'loading') return <p role="status">Chargement du projet…</p>
-  if (loadState === 'missing') return <><h1>Projet introuvable</h1><a className="admin-text-link" href="/admin/projects">Retour aux projets</a></>
-  if (loadState === 'error') return <div role="alert"><p>Impossible de charger ce projet pour le moment.</p><button className="admin-secondary-button" type="button" onClick={() => { setLoadState('loading'); setAttempt((value) => value + 1) }}>Réessayer</button></div>
+  if (loadState === 'loading') return <p className="admin-state admin-state-loading" role="status">Chargement du projet…</p>
+  if (loadState === 'missing') return <div className="admin-state admin-state-empty"><h1>Projet introuvable</h1><a className="admin-text-link" href="/admin/projects">Retour aux projets</a></div>
+  if (loadState === 'error') return <div className="admin-state admin-state-error" role="alert"><p>Impossible de charger ce projet pour le moment.</p><button className="admin-secondary-button" type="button" onClick={() => { setLoadState('loading'); setAttempt((value) => value + 1) }}>Réessayer</button></div>
 
   const validationEntries = Object.entries(fieldErrors)
   return <>
@@ -190,7 +196,7 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
     <h1>{editing ? (project?.title || 'Modifier le projet') : 'Créer un projet'}</h1>
     <p className="admin-lead">{editing ? 'Modifiez les informations du projet, puis enregistrez.' : 'Renseignez les informations du projet. Les images seront ajoutées séparément.'}</p>
     {feedback && <p className="admin-notice" role="status">{feedback}</p>}
-    {requestError && <p className="admin-error" role="alert">{requestError}</p>}
+    {requestError && <p className="admin-error admin-inline-alert" role="alert">{requestError}</p>}
     {!!validationEntries.length && <div className="admin-validation" role="alert" tabIndex={-1} ref={validationRef}>
       <p>Veuillez corriger les erreurs suivantes :</p>
       <ul>{validationEntries.map(([key, messages]) => <li key={key}>
@@ -199,19 +205,30 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
     </div>}
     <form className="admin-project-form" onSubmit={handleSubmit}>
       <fieldset disabled={busy !== 'idle'}>
-        <div className="admin-form-grid">
-          <ProjectField name="title" value={values.title} onChange={changeField} errors={fieldErrors.title} required />
-          <ProjectField name="slug" value={values.slug} onChange={changeField} errors={fieldErrors.slug} required hint="Identifiant utilisé dans l’adresse publique du projet." />
-          <ProjectField name="summary" value={values.summary} onChange={changeField} errors={fieldErrors.summary} multiline />
-          <ProjectField name="description" value={values.description} onChange={changeField} errors={fieldErrors.description} multiline />
-          <ProjectField name="category" value={values.category} onChange={changeField} errors={fieldErrors.category} hint="Utilisez la catégorie souhaitée, par exemple Affiches, Programmes ou Livres." />
-          <ProjectField name="year" value={values.year} onChange={changeField} errors={fieldErrors.year} type="number" />
-          <ProjectField name="client" value={values.client} onChange={changeField} errors={fieldErrors.client} />
-        </div>
-        <div className="admin-form-status">
-          <label className="admin-checkbox"><input type="checkbox" checked={values.published} onChange={(event) => { setValues((current) => ({ ...current, published: event.target.checked })); setFeedback('') }} /><span><strong>Publié</strong><small>{values.published ? 'Visible dans le portfolio public.' : 'Brouillon, non visible dans le portfolio public.'}</small></span></label>
-          <label className="admin-checkbox"><input type="checkbox" checked={values.featured} onChange={(event) => { setValues((current) => ({ ...current, featured: event.target.checked })); setFeedback('') }} /><span><strong>Mis en avant</strong><small>{values.featured ? 'Ce projet est marqué comme mis en avant.' : 'Ce projet n’est pas marqué comme mis en avant.'}</small></span></label>
-        </div>
+        <section className="admin-form-section" aria-labelledby="project-main-heading">
+          <h2 id="project-main-heading">Informations principales</h2>
+          <div className="admin-form-grid">
+            <ProjectField name="title" value={values.title} onChange={changeField} errors={fieldErrors.title} required />
+            <ProjectField name="slug" value={values.slug} onChange={changeField} errors={fieldErrors.slug} required hint="Identifiant utilisé dans l’adresse publique du projet." />
+            <ProjectField name="summary" value={values.summary} onChange={changeField} errors={fieldErrors.summary} multiline />
+            <ProjectField name="description" value={values.description} onChange={changeField} errors={fieldErrors.description} multiline />
+          </div>
+        </section>
+        <section className="admin-form-section" aria-labelledby="project-meta-heading">
+          <h2 id="project-meta-heading">Métadonnées</h2>
+          <div className="admin-form-grid">
+            <ProjectField name="category" value={values.category} onChange={changeField} errors={fieldErrors.category} hint="Utilisez la catégorie souhaitée, par exemple Affiches, Programmes ou Livres." />
+            <ProjectField name="year" value={values.year} onChange={changeField} errors={fieldErrors.year} type="number" />
+            <ProjectField name="client" value={values.client} onChange={changeField} errors={fieldErrors.client} />
+          </div>
+        </section>
+        <section className="admin-form-section" aria-labelledby="project-publication-heading">
+          <h2 id="project-publication-heading">Publication</h2>
+          <div className="admin-form-status">
+            <label className="admin-checkbox"><input type="checkbox" checked={values.published} onChange={(event) => { setValues((current) => ({ ...current, published: event.target.checked })); setFeedback('') }} /><span><strong>Publié</strong><small>{values.published ? 'Visible dans le portfolio public.' : 'Brouillon, non visible dans le portfolio public.'}</small></span></label>
+            <label className="admin-checkbox"><input type="checkbox" checked={values.featured} onChange={(event) => { setValues((current) => ({ ...current, featured: event.target.checked })); setFeedback('') }} /><span><strong>Mis en avant</strong><small>{values.featured ? 'Ce projet est marqué comme mis en avant.' : 'Ce projet n’est pas marqué comme mis en avant.'}</small></span></label>
+          </div>
+        </section>
         <div className="admin-form-actions">
           <button className="admin-button" type="submit">{busy === 'saving' ? 'Enregistrement…' : editing ? 'Enregistrer les modifications' : 'Créer le projet'}</button>
           <a className="admin-text-link" href="/admin/projects">Retour à la liste</a>
@@ -226,7 +243,7 @@ export function ProjectFormPage({ projectId }: { projectId?: number }) {
       <dialog className="admin-delete-dialog" ref={dialogRef} onCancel={(event) => { if (busy !== 'idle') event.preventDefault() }} aria-labelledby="admin-confirm-heading" aria-describedby="admin-confirm-description">
         <h2 id="admin-confirm-heading">Supprimer « {project.title} » ?</h2>
         <p id="admin-confirm-description">Cette suppression est définitive. Les images associées seront également supprimées.</p>
-        {deleteError && <p className="admin-error" role="alert">{deleteError}</p>}
+        {deleteError && <p className="admin-error admin-inline-alert" role="alert">{deleteError}</p>}
         <div className="admin-dialog-actions">
           <form method="dialog"><button className="admin-secondary-button" type="submit" disabled={busy !== 'idle'}>Annuler</button></form>
           <button className="admin-danger-button" type="button" disabled={busy !== 'idle'} onClick={handleDelete}>{busy === 'deleting' ? 'Suppression…' : `Confirmer la suppression de « ${project.title} »`}</button>

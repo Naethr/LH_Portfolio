@@ -243,29 +243,29 @@ export function ProjectImagesSection({ projectId }: { projectId: number }) {
     <h2 id="admin-images-heading">Images du projet</h2>
     <p>Les visuels sont affichés dans l’ordre de leur position enregistrée.</p>
     {feedback && <p className="admin-notice" role="status">{feedback}</p>}
-    {operationError && <p className="admin-error" role="alert">{operationError}</p>}
-    {gallery.status === 'loading' && <p role="status">Chargement des images…</p>}
-    {gallery.status === 'error' && <div role="alert"><p>Impossible de charger les images.</p><button className="admin-secondary-button" type="button" onClick={refresh}>Réessayer</button></div>}
+    {operationError && <p className="admin-error admin-inline-alert" role="alert">{operationError}</p>}
+    {gallery.status === 'loading' && <p className="admin-state admin-state-loading" role="status">Chargement des images…</p>}
+    {gallery.status === 'error' && <div className="admin-state admin-state-error" role="alert"><p>Impossible de charger les images.</p><button className="admin-secondary-button" type="button" onClick={refresh}>Réessayer</button></div>}
     {gallery.status === 'ready' && <>
-      {images.length === 0 ? <p>Ce projet ne contient encore aucune image.</p> :
+      {images.length === 0 ? <p className="admin-state admin-state-empty">Ce projet ne contient encore aucune image.</p> :
         <ol className="admin-image-list">
           {images.map((image, index) => {
             const draft = drafts[image.id]
             const errors = rowErrors[image.id] || {}
             return <li className="admin-image-card" key={image.id}>
               <div className="admin-image-preview">
-                <img src={image.image_url} alt={image.alt_text} />
+                <img src={image.image_url} alt={image.alt_text} loading="lazy" />
               </div>
               <div className="admin-image-details">
                 <div className="admin-image-heading">
                   <h3>Image {index + 1}</h3>
                   {image.is_primary && <span className="admin-status admin-status-published">Image principale</span>}
                 </div>
-                <p className="admin-image-meta">{image.asset_kind === 'artwork' ? 'Création finale · artwork' : 'Mise en situation · mockup'} · Position {image.position}</p>
-                <>
+                <p className="admin-image-meta"><span className="admin-image-kind">{image.asset_kind === 'artwork' ? 'Création finale · artwork' : 'Mise en situation · mockup'}</span><span>Position {image.position}</span></p>
                   <p className="admin-image-saved">Texte alternatif : {image.alt_text}</p>
                   {image.caption && <p className="admin-image-saved">Légende : {image.caption}</p>}
                   <form className="admin-image-form" onSubmit={(event) => handleSave(event, image)}>
+                    <h4>Modifier les informations</h4>
                     <fieldset disabled={busy !== null}>
                       {displayErrors(errors)}
                       <div className="admin-image-fields">
@@ -279,7 +279,6 @@ export function ProjectImagesSection({ projectId }: { projectId: number }) {
                       <div className="admin-image-actions"><button className="admin-button" type="submit">{busy === `save-${image.id}` ? 'Enregistrement…' : 'Enregistrer cette image'}</button></div>
                     </fieldset>
                   </form>
-                </>
                 <button className="admin-danger-button admin-image-delete-button" type="button" disabled={busy !== null} onClick={() => { setDeleteError(''); setConfirmImageId(image.id) }}>Supprimer cette image</button>
               </div>
             </li>
@@ -308,7 +307,7 @@ export function ProjectImagesSection({ projectId }: { projectId: number }) {
     <dialog className="admin-delete-dialog" ref={dialogRef} aria-labelledby="admin-image-delete-heading" aria-describedby="admin-image-delete-description" onClose={() => setConfirmImageId(null)} onCancel={(event) => { if (busy) event.preventDefault() }}>
       <h2 id="admin-image-delete-heading">Supprimer cette image ?</h2>
       <p id="admin-image-delete-description">{confirmedImage ? `L’image ${images.findIndex((image) => image.id === confirmedImage.id) + 1}, « ${confirmedImage.alt_text || `n° ${confirmedImage.id}`} », sera supprimée définitivement du projet.` : ''}</p>
-      {deleteError && <p className="admin-error" role="alert">{deleteError}</p>}
+      {deleteError && <p className="admin-error admin-inline-alert" role="alert">{deleteError}</p>}
       <div className="admin-dialog-actions"><form method="dialog"><button className="admin-secondary-button" type="submit" disabled={busy !== null}>Annuler</button></form><button className="admin-danger-button" type="button" disabled={busy !== null} onClick={handleDelete}>{busy?.startsWith('delete-') ? 'Suppression…' : 'Confirmer la suppression'}</button></div>
     </dialog>
   </section>

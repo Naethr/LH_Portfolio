@@ -18,15 +18,17 @@ const adminLinks = [
 
 export function AdminContent({ currentSection }: { currentSection: AdminSection }) {
   if (currentSection === 'dashboard') {
-    return <>
-      <p className="admin-kicker">Espace de travail</p>
-      <h1>Tableau de bord</h1>
-      <p className="admin-lead">Bienvenue dans l’administration du portfolio de Louise.</p>
+    return <section className="admin-dashboard" aria-labelledby="admin-dashboard-heading">
+      <div className="admin-dashboard-intro">
+        <p className="admin-kicker">Espace de travail</p>
+        <h1 id="admin-dashboard-heading">Tableau de bord</h1>
+        <p className="admin-lead">Bienvenue dans l’administration du portfolio de Louise. Choisissez une section pour continuer.</p>
+      </div>
       <nav className="admin-shortcuts" aria-label="Accès rapides">
-        <a href="/admin/projects"><span>Projets</span><span aria-hidden="true">↗</span></a>
-        <a href="/admin/profile"><span>Profil</span><span aria-hidden="true">↗</span></a>
+        <a href="/admin/projects"><span><strong>Projets</strong><small>Gérer les projets et leurs images</small></span><span aria-hidden="true">↗</span></a>
+        <a href="/admin/profile"><span><strong>Profil</strong><small>Modifier les informations de Louise</small></span><span aria-hidden="true">↗</span></a>
       </nav>
-    </>
+    </section>
   }
 
   if (currentSection === 'projects') {
@@ -153,9 +155,10 @@ function AdminApp() {
     <main className="admin-entry">
       <div className="admin-card">
         <span className="admin-mark" aria-hidden="true">LH</span>
-        {session.state === 'loading' && <p role="status">Vérification de la session…</p>}
-        {session.state === 'error' && <div role="alert"><p>La session ne peut pas être vérifiée pour le moment.</p><button className="admin-button" type="button" onClick={() => { setSession({ state: 'loading' }); setAttempt((value) => value + 1) }}>Réessayer</button></div>}
+        {session.state === 'loading' && <p className="admin-state admin-state-loading" role="status">Vérification de la session…</p>}
+        {session.state === 'error' && <div className="admin-state admin-state-error" role="alert"><p>La session ne peut pas être vérifiée pour le moment.</p><button className="admin-secondary-button" type="button" onClick={() => { setSession({ state: 'loading' }); setAttempt((value) => value + 1) }}>Réessayer</button></div>}
         {loginPath && session.state === 'unauthenticated' && <>
+          <p className="admin-kicker">Espace privé</p>
           <h1>Connexion admin</h1>
           <p className="admin-intro">Accès privé au portfolio de Louise.</p>
           <form onSubmit={handleLogin}>
@@ -163,7 +166,7 @@ function AdminApp() {
             <input id="admin-email" name="email_address" type="email" autoComplete="username" required autoFocus />
             <label htmlFor="admin-password">Mot de passe</label>
             <input id="admin-password" name="password" type="password" autoComplete="current-password" required />
-            {formError && <p className="admin-error" role="alert">{formError}</p>}
+            {formError && <p className="admin-error admin-inline-alert" role="alert">{formError}</p>}
             <button className="admin-button" type="submit" disabled={submitting}>{submitting ? 'Connexion…' : 'Se connecter'}</button>
           </form>
         </>}

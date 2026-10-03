@@ -32,14 +32,14 @@ export function ProjectsPage() {
       <a className="admin-primary-link" href="/admin/projects/new">Créer un projet</a>
     </div>
     {deleted && <p className="admin-notice" role="status">Le projet a été supprimé.</p>}
-    {state.status === 'loading' && <p role="status">Chargement des projets…</p>}
-    {state.status === 'error' && <div role="alert">
+    {state.status === 'loading' && <p className="admin-state admin-state-loading" role="status">Chargement des projets…</p>}
+    {state.status === 'error' && <div className="admin-state admin-state-error" role="alert">
       <p>Impossible de charger les projets pour le moment.</p>
       <button className="admin-secondary-button" type="button" onClick={() => { setState({ status: 'loading' }); setAttempt((value) => value + 1) }}>Réessayer</button>
     </div>}
     {state.status === 'ready' && <>
       <p className="admin-list-count">{state.projects.length} projet{state.projects.length > 1 ? 's' : ''}</p>
-      {state.projects.length === 0 ? <p>Aucun projet pour le moment. Vous pouvez créer le premier.</p> :
+      {state.projects.length === 0 ? <p className="admin-state admin-state-empty">Aucun projet pour le moment. Vous pouvez créer le premier.</p> :
         <ul className="admin-project-list">
           {state.projects.map((project) => <li className="admin-project-row" key={project.id}>
             <div className="admin-project-identity">
@@ -47,8 +47,8 @@ export function ProjectsPage() {
               <span>{project.category || 'Sans catégorie'}{project.year !== null ? ` · ${project.year}` : ''}</span>
             </div>
             <div className="admin-project-status">
-              <span className={project.published ? 'admin-status admin-status-published' : 'admin-status'}>{project.published ? 'Publié' : 'Brouillon'}</span>
-              <span className="admin-featured">{project.featured ? 'Mis en avant' : 'Non mis en avant'}</span>
+              <span className={project.published ? 'admin-status admin-status-published' : 'admin-status admin-status-draft'}>{project.published ? 'Publié' : 'Brouillon'}</span>
+              <span className={project.featured ? 'admin-featured admin-featured-active' : 'admin-featured'}>{project.featured ? 'Mis en avant' : 'Non mis en avant'}</span>
             </div>
             <a className="admin-edit-link" href={`/admin/projects/${project.id}/edit`} aria-label={`Modifier le projet ${project.title}`}>Modifier</a>
           </li>)}
