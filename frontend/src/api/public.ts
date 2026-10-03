@@ -54,9 +54,6 @@ async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
 }
 
 export const getProfile = (signal?: AbortSignal) => getJson<Profile>('/profile', signal)
-export const getProjects = (signal?: AbortSignal) =>
-  getJson<ProjectSummary[]>('/projects', signal).then((projects) =>
-    projects.sort((left, right) => left.slug.localeCompare(right.slug)),
-  )
+export const getProjects = (signal?: AbortSignal) => getJson<ProjectSummary[]>('/projects', signal)
 export const getProject = (slug: string, signal?: AbortSignal) =>
   getJson<ProjectDetail>(`/projects/${encodeURIComponent(slug)}`, signal)

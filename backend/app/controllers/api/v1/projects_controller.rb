@@ -22,7 +22,7 @@ class Api::V1::ProjectsController < ApplicationController
   ].freeze
   
   def index
-    projects = Project.published.includes(
+    projects = Project.published.ordered.includes(
       project_images: {
         image_attachment: :blob
       }

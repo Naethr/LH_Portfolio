@@ -1,4 +1,4 @@
-export type AdminSection = 'dashboard' | 'projects' | 'project-new' | 'project-edit' | 'profile' | 'missing'
+export type AdminSection = 'dashboard' | 'projects' | 'project-order' | 'project-new' | 'project-edit' | 'profile' | 'missing'
 
 export function getAdminProjectId(pathname: string): number | null {
   const match = /^\/admin\/projects\/([1-9]\d*)\/edit\/?$/.exec(pathname)
@@ -11,6 +11,7 @@ export function getAdminSection(pathname: string): AdminSection {
   const route = pathname.replace(/\/+$/, '') || '/'
   return route === '/admin' ? 'dashboard'
     : route === '/admin/projects' ? 'projects'
+      : route === '/admin/projects/order' ? 'project-order'
       : route === '/admin/projects/new' ? 'project-new'
         : getAdminProjectId(route) !== null ? 'project-edit'
           : route === '/admin/profile' ? 'profile' : 'missing'

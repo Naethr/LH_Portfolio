@@ -29,7 +29,10 @@ export function ProjectsPage() {
         <p className="admin-kicker">Portfolio</p>
         <h1>Projets</h1>
       </div>
-      <a className="admin-primary-link" href="/admin/projects/new">Créer un projet</a>
+      <div className="admin-heading-actions">
+        <a className="admin-secondary-button" href="/admin/projects/order">Organiser les créations</a>
+        <a className="admin-primary-link" href="/admin/projects/new">Créer un projet</a>
+      </div>
     </div>
     {deleted && <p className="admin-notice" role="status">Le projet a été supprimé.</p>}
     {state.status === 'loading' && <p className="admin-state admin-state-loading" role="status">Chargement des projets…</p>}

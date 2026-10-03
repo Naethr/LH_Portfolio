@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_124042) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_03_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,13 +72,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_29_124042) do
     t.datetime "created_at", null: false
     t.text "description"
     t.boolean "featured", default: false, null: false
+    t.integer "position", null: false
     t.boolean "published", default: false, null: false
     t.string "slug", null: false
     t.text "summary"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.integer "year"
+    t.index ["position", "id"], name: "index_projects_on_position_and_id"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
+    t.check_constraint "\"position\" >= 0", name: "projects_position_nonnegative"
   end
 
   create_table "sessions", force: :cascade do |t|

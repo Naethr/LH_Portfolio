@@ -69,6 +69,7 @@ class ApiV1AdminProjectsTest < ActionDispatch::IntegrationTest
         client
         featured
         id
+        position
         published
         slug
         summary
@@ -108,6 +109,7 @@ class ApiV1AdminProjectsTest < ActionDispatch::IntegrationTest
         description
         featured
         id
+        position
         published
         slug
         summary
@@ -157,6 +159,7 @@ class ApiV1AdminProjectsTest < ActionDispatch::IntegrationTest
 
     assert_equal "New project", body["title"]
     assert_equal false, body["published"]
+    assert_equal 2, body["position"]
   end
 
   test "POST /api/v1/admin/projects rejects invalid data" do
@@ -263,6 +266,75 @@ class ApiV1AdminProjectsTest < ActionDispatch::IntegrationTest
   end
 
     assert_response :unauthorized
+  end
+
+  test "GET /api/v1/admin/projects follows canonical positions including drafts" do
+    login
+    @published_project.update_column(:position, 2)
+    @draft_project.update_column(:position, 0)
+
+    get api_v1_admin_projects_path
+
+    assert_response :success
+    projects = JSON.parse(response.body)
+    assert_equal [@draft_project.id, @published_project.id], projects.map { |project| project.fetch("id") }
+    assert_equal [0, 2], projects.map { |project| project.fetch("position") }
+  end
+
+  test "PATCH reorder persists a complete order and returns it" do
+    login
+    token = csrf_token
+    ids = [@draft_project.id, @published_project.id]
+
+    patch reorder_api_v1_admin_projects_path,
+      params: { project_ids: ids },
+      headers: { "X-CSRF-Token" => token },
+      as: :json
+
+    assert_response :success
+    assert_equal ids, JSON.parse(response.body).fetch("project_ids")
+    assert_equal 0, @draft_project.reload.position
+    assert_equal 1, @published_project.reload.position
+
+    get api_v1_admin_projects_path
+    assert_equal ids, JSON.parse(response.body).map { |project| project.fetch("id") }
+  end
+
+  test "PATCH reorder rejects unknown, duplicate, and incomplete IDs without changing positions" do
+    login
+    token = csrf_token
+    initial = Project.ordered.pluck(:id, :position)
+
+    [[@published_project.id, 999_999], [@published_project.id, @published_project.id], [@draft_project.id]].each do |ids|
+      patch reorder_api_v1_admin_projects_path,
+        params: { project_ids: ids },
+        headers: { "X-CSRF-Token" => token },
+        as: :json
+
+      assert_response :unprocessable_content
+      assert JSON.parse(response.body).fetch("errors").key?("project_ids")
+      assert_equal initial, Project.ordered.pluck(:id, :position)
+    end
+  end
+
+  test "PATCH reorder requires an admin session and CSRF token" do
+    token = csrf_token
+    ids = [@draft_project.id, @published_project.id]
+    initial = Project.ordered.pluck(:id, :position)
+
+    patch reorder_api_v1_admin_projects_path,
+      params: { project_ids: ids },
+      headers: { "X-CSRF-Token" => token },
+      as: :json
+    assert_response :unauthorized
+    assert_equal initial, Project.ordered.pluck(:id, :position)
+
+    login
+    patch reorder_api_v1_admin_projects_path,
+      params: { project_ids: ids },
+      as: :json
+    assert_response :unprocessable_content
+    assert_equal initial, Project.ordered.pluck(:id, :position)
   end
   
   private

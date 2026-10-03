@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           resource :session, only: [:show, :create, :destroy]
           resource :profile, only: [:show, :update]
           resources :projects, only: [:index, :show, :create, :update, :destroy] do
+            patch :reorder, on: :collection
             resources :images, only: [:index, :create, :update, :destroy], controller: "project_images"
           end
         end

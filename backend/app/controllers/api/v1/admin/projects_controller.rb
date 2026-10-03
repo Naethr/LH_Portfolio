@@ -7,6 +7,7 @@ class Api::V1::Admin::ProjectsController < ApplicationController
     category
     year
     client
+    position
     published
     featured
   ].freeze
@@ -20,12 +21,13 @@ class Api::V1::Admin::ProjectsController < ApplicationController
     category
     year
     client
+    position
     published
     featured
 ].freeze
 
   def index
-    projects = Project.all
+    projects = Project.ordered
 
     render json: projects.as_json(only: INDEX_FIELDS)
   end
@@ -63,6 +65,32 @@ class Api::V1::Admin::ProjectsController < ApplicationController
     project.destroy!
 
     head :no_content
+  end
+
+  def reorder
+    project_ids = params[:project_ids]
+    valid_ids = project_ids.is_a?(Array) && project_ids.all? { |id| id.is_a?(Integer) && id.positive? }
+
+    saved_ids = if valid_ids
+      Project.transaction do
+        existing_ids = Project.lock.order(:id).pluck(:id)
+        next unless project_ids.length == existing_ids.length &&
+          project_ids.uniq.length == project_ids.length &&
+          project_ids.sort == existing_ids
+
+        project_ids.each_with_index do |id, position|
+          Project.where(id: id).update_all(position: position)
+        end
+        project_ids
+      end
+    end
+
+    if saved_ids
+      render json: { project_ids: saved_ids }
+    else
+      render json: { errors: { project_ids: ["must contain every project ID exactly once"] } },
+        status: :unprocessable_content
+    end
   end
   
 private

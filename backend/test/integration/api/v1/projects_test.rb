@@ -29,6 +29,20 @@ class Api::V1::ProjectsTest < ActionDispatch::IntegrationTest
     assert_not_includes slugs, @draft_project.slug
   end
 
+  test "GET /api/v1/projects follows canonical positions without exposing them" do
+    later = Project.create!(title: "Later", slug: "later", published: true)
+    @published_project.update_column(:position, 2)
+    later.update_column(:position, 0)
+    @draft_project.update_column(:position, 1)
+
+    get api_v1_projects_path
+
+    assert_response :success
+    projects = JSON.parse(response.body)
+    assert_equal [later.slug, @published_project.slug], projects.map { |project| project.fetch("slug") }
+    assert projects.none? { |project| project.key?("position") }
+  end
+
 test "GET /api/v1/projects includes only the primary image for each project" do
   primary_image = create_project_image(
     project: @published_project,

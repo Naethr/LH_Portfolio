@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { AdminApiError, getAdminSession, logIn, logOut, type AdminUser } from './api/admin'
 import { getAdminProjectId, getAdminSection, type AdminSection } from './adminRoutes'
 import { ProjectFormPage } from './admin/ProjectFormPage'
+import { ProjectOrderPage } from './admin/ProjectOrderPage'
 import { ProjectsPage } from './admin/ProjectsPage'
 import { ProfilePage } from './admin/ProfilePage'
 import './styles/admin.css'
@@ -33,6 +34,10 @@ export function AdminContent({ currentSection }: { currentSection: AdminSection 
 
   if (currentSection === 'projects') {
     return <ProjectsPage />
+  }
+
+  if (currentSection === 'project-order') {
+    return <ProjectOrderPage />
   }
 
   if (currentSection === 'project-new') {
@@ -74,7 +79,7 @@ export function AdminShell({ user, currentSection, submitting, formError, onLogo
           </div>
         </div>
         <nav className="admin-nav" aria-label="Navigation admin">
-          {adminLinks.map((link) => <a key={link.path} href={link.path} aria-current={(currentSection === link.section || (link.section === 'projects' && (currentSection === 'project-new' || currentSection === 'project-edit'))) ? 'page' : undefined}>{link.label}</a>)}
+          {adminLinks.map((link) => <a key={link.path} href={link.path} aria-current={(currentSection === link.section || (link.section === 'projects' && (currentSection === 'project-order' || currentSection === 'project-new' || currentSection === 'project-edit'))) ? 'page' : undefined}>{link.label}</a>)}
         </nav>
       </div>
     </header>

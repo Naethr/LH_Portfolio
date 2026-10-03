@@ -13,6 +13,7 @@ export interface AdminProfile {
 
 export interface AdminProjectSummary {
   id: number
+  position: number
   title: string
   slug: string
   summary: string | null
@@ -27,7 +28,7 @@ export interface AdminProject extends AdminProjectSummary {
   description: string | null
 }
 
-export type AdminProjectInput = Omit<AdminProject, 'id'>
+export type AdminProjectInput = Omit<AdminProject, 'id' | 'position'>
 
 export type AdminAssetKind = 'artwork' | 'mockup'
 
@@ -145,6 +146,17 @@ async function projectMutation(path: string, method: 'POST' | 'PATCH' | 'DELETE'
 export async function getAdminProjects(signal?: AbortSignal): Promise<AdminProjectSummary[]> {
   const response = await request('/admin/projects', { signal })
   return response.json()
+}
+
+export async function reorderAdminProjects(projectIds: number[]): Promise<number[]> {
+  const token = await csrfToken()
+  const response = await request('/admin/projects/reorder', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    body: JSON.stringify({ project_ids: projectIds }),
+  })
+  const data: { project_ids: number[] } = await response.json()
+  return data.project_ids
 }
 
 export async function getAdminProject(id: number, signal?: AbortSignal): Promise<AdminProject> {
