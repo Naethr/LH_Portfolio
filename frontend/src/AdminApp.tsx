@@ -3,6 +3,7 @@ import { AdminApiError, getAdminSession, logIn, logOut, type AdminUser } from '.
 import { getAdminProjectId, getAdminSection, type AdminSection } from './adminRoutes'
 import { ProjectFormPage } from './admin/ProjectFormPage'
 import { ProjectsPage } from './admin/ProjectsPage'
+import { ProfilePage } from './admin/ProfilePage'
 import './styles/admin.css'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
@@ -42,11 +43,7 @@ export function AdminContent({ currentSection }: { currentSection: AdminSection 
   }
 
   if (currentSection === 'profile') {
-    return <>
-      <p className="admin-kicker">Informations</p>
-      <h1>Profil</h1>
-      <p className="admin-lead">La modification du profil sera disponible dans une prochaine étape.</p>
-    </>
+    return <ProfilePage />
   }
 
   return <>

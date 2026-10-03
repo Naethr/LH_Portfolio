@@ -2,6 +2,15 @@ export interface AdminUser {
   email_address: string
 }
 
+export interface AdminProfile {
+  display_name: string
+  headline: string | null
+  bio: string | null
+  email: string | null
+  instagram_url: string | null
+  linkedin_url: string | null
+}
+
 export interface AdminProjectSummary {
   id: number
   title: string
@@ -103,6 +112,21 @@ export async function logOut(): Promise<void> {
     method: 'DELETE',
     headers: { 'X-CSRF-Token': token },
   })
+}
+
+export async function getAdminProfile(signal?: AbortSignal): Promise<AdminProfile> {
+  const response = await request('/admin/profile', { signal })
+  return response.json()
+}
+
+export async function updateAdminProfile(profile: AdminProfile): Promise<AdminProfile> {
+  const token = await csrfToken()
+  const response = await request('/admin/profile', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+    body: JSON.stringify({ profile }),
+  })
+  return response.json()
 }
 
 function projectPath(id: number) {
