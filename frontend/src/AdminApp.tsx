@@ -1,11 +1,93 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { AdminApiError, getAdminSession, logIn, logOut, type AdminUser } from './api/admin'
+import { getAdminProjectId, getAdminSection, type AdminSection } from './adminRoutes'
+import { ProjectFormPage } from './admin/ProjectFormPage'
+import { ProjectsPage } from './admin/ProjectsPage'
 import './styles/admin.css'
 
-const loginPath = /^\/admin\/login\/?$/.test(window.location.pathname)
+const path = window.location.pathname.replace(/\/+$/, '') || '/'
+const loginPath = path === '/admin/login'
+const section = getAdminSection(path)
+
+const adminLinks = [
+  { path: '/admin', label: 'Tableau de bord', section: 'dashboard' },
+  { path: '/admin/projects', label: 'Projets', section: 'projects' },
+  { path: '/admin/profile', label: 'Profil', section: 'profile' },
+] as const
+
+export function AdminContent({ currentSection }: { currentSection: AdminSection }) {
+  if (currentSection === 'dashboard') {
+    return <>
+      <p className="admin-kicker">Espace de travail</p>
+      <h1>Tableau de bord</h1>
+      <p className="admin-lead">Bienvenue dans l’administration du portfolio de Louise.</p>
+      <nav className="admin-shortcuts" aria-label="Accès rapides">
+        <a href="/admin/projects"><span>Projets</span><span aria-hidden="true">↗</span></a>
+        <a href="/admin/profile"><span>Profil</span><span aria-hidden="true">↗</span></a>
+      </nav>
+    </>
+  }
+
+  if (currentSection === 'projects') {
+    return <ProjectsPage />
+  }
+
+  if (currentSection === 'project-new') {
+    return <ProjectFormPage />
+  }
+
+  if (currentSection === 'project-edit') {
+    const id = getAdminProjectId(path)
+    return id === null ? null : <ProjectFormPage projectId={id} />
+  }
+
+  if (currentSection === 'profile') {
+    return <>
+      <p className="admin-kicker">Informations</p>
+      <h1>Profil</h1>
+      <p className="admin-lead">La modification du profil sera disponible dans une prochaine étape.</p>
+    </>
+  }
+
+  return <>
+    <h1>Page introuvable</h1>
+    <p className="admin-lead">Cette page de l’administration n’existe pas.</p>
+    <a className="admin-text-link" href="/admin">Revenir au tableau de bord</a>
+  </>
+}
+
+export function AdminShell({ user, currentSection, submitting, formError, onLogout }: {
+  user: AdminUser
+  currentSection: AdminSection
+  submitting: boolean
+  formError: string
+  onLogout: () => void
+}) {
+  return <div className="admin-shell">
+    <a className="admin-skip" href="#admin-content">Aller au contenu</a>
+    <header className="admin-header">
+      <div className="admin-header-inner">
+        <div className="admin-header-top">
+          <a className="admin-brand" href="/admin" aria-label="Administration — tableau de bord"><span aria-hidden="true">LH</span><span>Administration</span></a>
+          <div className="admin-account">
+            <span className="admin-email">{user.email_address}</span>
+            <button className="admin-logout" type="button" disabled={submitting} onClick={onLogout}>{submitting ? 'Déconnexion…' : 'Se déconnecter'}</button>
+          </div>
+        </div>
+        <nav className="admin-nav" aria-label="Navigation admin">
+          {adminLinks.map((link) => <a key={link.path} href={link.path} aria-current={(currentSection === link.section || (link.section === 'projects' && (currentSection === 'project-new' || currentSection === 'project-edit'))) ? 'page' : undefined}>{link.label}</a>)}
+        </nav>
+      </div>
+    </header>
+    <main className="admin-content" id="admin-content">
+      {formError && <p className="admin-error" role="alert">{formError}</p>}
+      <AdminContent currentSection={currentSection} />
+    </main>
+  </div>
+}
 
 function AdminApp() {
-  const [session, setSession] = useState<{ state: 'loading' | 'authenticated' | 'unauthenticated' | 'error'; user?: AdminUser }>({ state: 'loading' })
+  const [session, setSession] = useState<{ state: 'loading' | 'unauthenticated' | 'error' } | { state: 'authenticated'; user: AdminUser }>({ state: 'loading' })
   const [attempt, setAttempt] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -66,8 +148,12 @@ function AdminApp() {
     }
   }
 
+  if (!loginPath && session.state === 'authenticated') {
+    return <AdminShell user={session.user} currentSection={section} submitting={submitting} formError={formError} onLogout={handleLogout} />
+  }
+
   return (
-    <main className="admin-page">
+    <main className="admin-entry">
       <div className="admin-card">
         <span className="admin-mark" aria-hidden="true">LH</span>
         {session.state === 'loading' && <p role="status">Vérification de la session…</p>}
@@ -83,13 +169,6 @@ function AdminApp() {
             {formError && <p className="admin-error" role="alert">{formError}</p>}
             <button className="admin-button" type="submit" disabled={submitting}>{submitting ? 'Connexion…' : 'Se connecter'}</button>
           </form>
-        </>}
-        {!loginPath && session.state === 'authenticated' && <>
-          <h1>Espace admin</h1>
-          <p className="admin-intro">Connecté avec {session.user?.email_address}.</p>
-          <p>Votre session est active.</p>
-          {formError && <p className="admin-error" role="alert">{formError}</p>}
-          <button className="admin-button" type="button" disabled={submitting} onClick={handleLogout}>{submitting ? 'Déconnexion…' : 'Se déconnecter'}</button>
         </>}
       </div>
     </main>

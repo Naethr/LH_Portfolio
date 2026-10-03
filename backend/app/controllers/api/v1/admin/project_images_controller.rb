@@ -59,6 +59,13 @@ class Api::V1::Admin::ProjectImagesController < ApplicationController
       asset_kind: project_image.asset_kind,
       position: project_image.position,
       is_primary: project_image.is_primary,
+      alt_text: project_image.alt_text,
+      caption: project_image.caption,
+      image_url: rails_representation_url(
+        project_image.image.variant(:card),
+        host: request.host_with_port,
+        protocol: request.protocol
+      )
     }
   end
 end
